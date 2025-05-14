@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeorm from './config/typeorm';
 import server from './config/server';
@@ -7,6 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CommonModule } from './common/common.module';
+import { PaymentsModule } from './core/payments/payments.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './common/logger';
+import { QueuesModule } from './infrastructure/bull/queues.module';
 
 @Module({
   imports: [
@@ -38,8 +42,16 @@ import { CommonModule } from './common/common.module';
       inject: [ConfigService],
     }),
     CommonModule,
+    PaymentsModule,
+    QueuesModule.register(),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    Logger,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

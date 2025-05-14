@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -31,4 +32,15 @@ export class Client extends BaseTimestampEntity {
 
   @OneToMany(() => Transaction, (transactions) => transactions.client)
   transactions: Transaction[];
+
+  balance: number;
+
+  @AfterLoad()
+  computeBalance() {
+    this.balance =
+      this.transactions?.reduce(
+        (sum, transaction) => sum + parseFloat(transaction.amount),
+        0,
+      ) ?? 0;
+  }
 }

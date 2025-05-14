@@ -121,12 +121,12 @@ failed_jobs
 ## 5. API Design
 
 ```
-POST /api/v1/webhooks/{bank}
+POST /api/v1/payments/receive/:bank
 Headers: Content-Type: text/plain, X-Bank-Signature
 Body: raw text lines (one transaction per line)
 Response: 200
 
-POST /api/v1/sendmoney
+POST /api/v1/payments/send
 Headers: Content-Type: application/json, Authorization: Bearer <token>
 Body: {
   "amount": 177.39,

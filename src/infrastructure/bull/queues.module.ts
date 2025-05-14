@@ -4,16 +4,21 @@ import {
   Module,
   NestModule,
 } from '@nestjs/common';
-import { BullModule } from '@nestjs/bull';
-import { AuthMiddleware } from './utils';
+import { BullModule, InjectQueue } from '@nestjs/bull';
+import { AuthMiddleware, Queues } from './utils';
 import { createBullBoard } from '@bull-board/api';
 import { ExpressAdapter } from '@bull-board/express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CommonModule } from '@/common/common.module';
+import { Queue } from 'bull';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 
 @Module({})
 export class QueuesModule implements NestModule {
   static register(): DynamicModule {
+    const receiveMoneyQueue = BullModule.registerQueue({
+      name: Queues.ReceiveMoneyQueue,
+    });
     return {
       module: QueuesModule,
       imports: [
@@ -32,20 +37,24 @@ export class QueuesModule implements NestModule {
           inject: [ConfigService],
         }),
         CommonModule,
+        receiveMoneyQueue,
       ],
-      providers: [],
-      exports: [],
+      providers: [...receiveMoneyQueue.providers],
+      exports: [...receiveMoneyQueue.exports],
     };
   }
 
-  constructor() {}
+  constructor(
+    @InjectQueue(Queues.ReceiveMoneyQueue)
+    private readonly receiveMoneyQueue: Queue,
+  ) {}
 
   configure(consumer: MiddlewareConsumer) {
     const serverAdapter = new ExpressAdapter();
     serverAdapter.setBasePath('/admin/queues');
 
     createBullBoard({
-      queues: [],
+      queues: [new BullMQAdapter(this.receiveMoneyQueue)],
       serverAdapter,
       options: {
         uiConfig: {
