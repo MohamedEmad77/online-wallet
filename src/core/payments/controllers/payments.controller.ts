@@ -3,6 +3,7 @@ import { LoggerService } from '@/common/logger';
 import { Queues } from '@/infrastructure/bull/utils';
 import { InjectQueue } from '@nestjs/bull';
 import {
+  Body,
   Controller,
   HttpCode,
   Param,
@@ -11,6 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Queue } from 'bull';
+import { SendMoneyDto } from '../dtos';
+import { PaymentService } from '../services';
 
 @Controller('payments')
 export class PaymentsController {
@@ -18,6 +21,7 @@ export class PaymentsController {
     @InjectQueue(Queues.ReceiveMoneyQueue)
     private readonly receiveMoneyQueue: Queue,
     private readonly loggerService: LoggerService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   @Post('/receive/:bank')
@@ -38,5 +42,11 @@ export class PaymentsController {
         { bank, raw },
       );
     }
+  }
+
+  @Post('/send')
+  @HttpCode(200)
+  sendMoney(@Body() sendMoneyDto: SendMoneyDto): string {
+    return this.paymentService.sendMoney(sendMoneyDto);
   }
 }
