@@ -6,9 +6,15 @@ import { PaymentService, ProcessReceivingMoneyService } from './services';
 import { AcmeParser, FoodicsParser } from './parsers';
 import { BankParserContext } from './parsers/bank-parser-context';
 import { SendMoneyXmlBuilder } from './builders';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Bank, Client, Transaction } from './entities';
 
 @Module({
-  imports: [QueuesModule.register(), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Client, Bank, Transaction]),
+    QueuesModule.register(),
+    CommonModule,
+  ],
   controllers: [PaymentsController],
   providers: [
     ProcessReceivingMoneyService,

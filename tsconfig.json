@@ -23,6 +23,7 @@
       "@config/*": ["src/config/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@core/*": ["src/core/*"]
-    }
+    },
+    "types": ["node", "reflect-metadata", "jest"]
   }
 }

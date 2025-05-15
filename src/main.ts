@@ -8,6 +8,7 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import * as express from 'express';
+import 'reflect-metadata';
 
 async function bootstrap() {
   const logger = new LoggerService('online-wallet');

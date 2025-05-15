@@ -1,9 +1,40 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "preset": "ts-jest",
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": "../",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".*\\.e2e-spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "astTransformers": [
+          "./ts-jest.swagger.js"
+        ]
+      }
+    ]
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@common/(.*)$": "<rootDir>/src/common/$1",
+    "^@config/(.*)$": "<rootDir>/src/config/$1",
+    "^@infrastructure/(.*)$": "<rootDir>/src/infrastructure/$1",
+    "^@core/(.*)$": "<rootDir>/src/core/$1"
+  },
+  "globals": {
+    "ts-jest": {
+      "diagnostics": {
+        "ignoreCodes": [2451]
+      }
+    }
+  },
+  "setupFiles": [
+    "ts-node/register/transpile-only",
+    "tsconfig-paths/register",
+    "reflect-metadata"
+  ]
 }
